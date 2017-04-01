@@ -1,0 +1,7 @@
+infant_category,gestational_age_at_birth,percent_all_deliveries,percent_infants_surgical
+0,less than 24,0.231826119,9.708737864
+1,24 to <27,1.463550222,11.23417722
+2,27 to <30,2.888807737,5.062616573
+3,30 to <33,6.516930847,1.865236652
+4,33 to <36,17.67353323,0.815717919
+5,36 or greater,71.22535184,0.93069978
