@@ -16,7 +16,8 @@ from neonet_modules.audit import Audit
 
 # warnings.filterwarnings("ignore")
 
-# Todo need to fix general audit nurse workload
+# Todo need to fix general audit nurse workload. Really?
+# Todo add in networks
 
 class Glob_vars:  # misc global data
     truncate_data = True
@@ -178,6 +179,7 @@ class Model:
         self.audit = Audit()
 
         # Set up output files
+
         self.audit.set_up_output(Glob_vars.output_folder)
 
         # Initialise model processes
