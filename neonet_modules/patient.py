@@ -15,8 +15,11 @@ class Patient:
      'distance_from_home',
      'entry',
      'fetuses',
+     'home_network',
+     'ho
      'id',
      'in_closest_appropriate_hospital',
+     'in_home_network',
      'last_hopsital',
      'los_ln_mu',
      'los_ln_stdev',
@@ -38,21 +41,24 @@ class Patient:
         self.id = id
         self.delivery_id = delivery
         self.time_in = time_in
-        self.spells=0
+        self.spells = 0
         self.current_hospital = 'None'
+        self.home_network = 0
         self.in_closest_appropriate_hospital = False
+        self.in_home_network = False
         self.closest_appropriate_hospital = 'None'
+        # Set LSOA (by reading weights and selection)
         weights = data.lsoa_demand['all_neonatal']
         selection = data.lsoa_demand.index
         self.lsoa = random.choices(selection, weights=weights)
         self.lsoa = self.lsoa[0]
-        self.birth_hospital='None'
-        self.last_hopsital='None'
+        self.birth_hospital = 'None'
+        self.last_hopsital = 'None'
         self.complete = False
         self.distance_from_home = 0
         self.transfers = 0
         self.total_transfer_distance = 0
-
+        
         # Set infant category
         weights = data.deliveries['percent_all_deliveries']
         selection = np.arange(len(weights))
@@ -62,10 +68,10 @@ class Patient:
         self.fetuses = 1
         weights = data.fetuses_matrix[self.category, :]
         weights = weights[0]
-        selection = np.arange(len(weights))+1
+        selection = np.arange(len(weights)) + 1
         self.fetuses = random.choices(selection, weights=weights)[0]
 
-    def set_care_requirements(self,data):
+    def set_care_requirements(self, data):
         # set surgical category        # Set twins
         self.category_without_surgery = self.category
         prob_surgery_array = data.deliveries['percent_infants_surgical'].values
@@ -79,7 +85,7 @@ class Patient:
 
         # Identify entry point
         weights = data.entry_matrix[self.category, :]
-        weights=weights[0]
+        weights = weights[0]
         selection = np.arange(len(weights))
         self.entry = random.choices(selection, weights=weights)[0]
         self.use_levels[self.entry] = True
@@ -98,7 +104,7 @@ class Patient:
 
         # Add lengths of stay
             # loop through care levels
-            self.los=[]
+            self.los = []
             for care_level in range (5):
                 _los_mu = self.los_ln_mu[0][care_level]
                 _los_stdev = self.los_ln_stdev[0][care_level]

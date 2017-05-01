@@ -1,20 +1,23 @@
 """National neonatal demand and capacity model
-*** Requires Python 3.6 ***
-For info contact m.allen@exeter.ac.uk"""
+*** Requires Python 3.6 or greater***
+
+(c)2017 Michael Allen 
+This code is distributed under GNU GPL2
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+For info contact michael.allen1966@gmail.com
+"""
 
 import simpy
 import random
 import time
 import numpy as np
 import copy
-import warnings
+
+# Import classes 
 from neonet_modules.patient import Patient
 from neonet_modules.data import Data
 from neonet_modules.network import Network
 from neonet_modules.audit import Audit
-
-
-# warnings.filterwarnings("ignore")
 
 # Todo need to fix general audit nurse workload. Really?
 # Todo add in networks
@@ -30,9 +33,11 @@ class Glob_vars:  # misc global data
     day = 0
     year = 1
     output_folder = 'output/test'
-    network_count_columns = ['current_surgery', 'current_level_1', 'current_level_2', 'current_level_3',
+    network_count_columns = ['current_surgery',
+                             'current_level_1', 
+                             'current_level_2', 
+                             'current_level_3',
                              'current_level_4']
-
 
 class Model:
     def __init__(self):
@@ -46,7 +51,8 @@ class Model:
 
         # Daily audits
         while True:
-            self.audit.perform_daily_audit(Glob_vars.day, Glob_vars.year, self.network, Glob_vars.output_folder)
+            self.audit.perform_daily_audit(Glob_vars.day, Glob_vars.year, self.network, 
+                Glob_vars.output_folder)
             # Trigger next audit in 1 day
             yield self.env.timeout(1)
 
@@ -64,7 +70,8 @@ class Model:
         _required_nurse_resources = Glob_vars.nurse_for_care_level[_required_care_level]
 
         # set required unit type
-        # default to care level (0=surg --> 4 = TC), but amend for short Los at a particular care level
+        # default to care level (0=surg --> 4 = TC), 
+        # but amend for short Los at a particular care level
         p.required_unit_type = _required_care_level
 
         # If level of care = IC but LoS <2 days then allow a HDU unit to care for infant
@@ -78,24 +85,32 @@ class Model:
                 p.required_unit_type = 3
 
         # Filter hospital list to appropriate level
-        _header_list = ['neonatal_surg', 'neonatal_level_1', 'neonatal_level_2', 'neonatal_level_3', 'neonatal_level_4']
+        _header_list = ['neonatal_surg', 
+                        'neonatal_level_1', 
+                        'neonatal_level_2', 
+                        'neonatal_level_3', 
+                        'neonatal_level_4']
         _check_column_name = _header_list[ p.required_unit_type]
-        _filtered_hospitals = self.data.hospital_info_df.loc[self.data.hospital_info_df[_check_column_name] == 1]
+        _filtered_hospitals = (self.data.hospital_info_df.loc[self.data.hospital_info_df[_check_column_name] == 1])
         _hospital_search_list = list(_filtered_hospitals['hospital_postcode'])
 
         # Generate list of all hospitals (closest first) depedning on LSOA
         _lsoa = p.lsoa
-        _ordered_list_for_lsoa = list(self.data.closest_hospital_order.loc[_lsoa, :])  # all levels of unit
+        _ordered_list_for_lsoa = list(self.data.ordered_hospital_by_network.loc[_lsoa, :])
 
         # Initialise parameters
         _bed_found = 0
         _closest_appropriate_hospital_identified = False
 
         # Record 'birth hospital' as closest hospital with any level of neonatal unit
-        p.birth_hospital = _ordered_list_for_lsoa[0]
-
+        if p.birth_hospital == 'None':
+            p.birth_hospital = _ordered_list_for_lsoa[0]
+            _hospital_details=self.data.hospital_info_df[self.data.hospital_info_df['hospital_postcode'] == _ordered_list_for_lsoa[0]]
+            p.home_network=_hospital_details['network'].item() # network extracted as dictionary
+                
+            
         # If this is first spell record 'previous hospital' as birth hospital
-        # This is used for transfer if first level of care is greater than available in bith hospital
+        # This is used for transfer if 1st level of care is greater than available in bith hospital
         if p.spells == 1:
             p.previous_hospital = p.birth_hospital
 
@@ -183,9 +198,13 @@ class Model:
         self.audit.set_up_output(Glob_vars.output_folder)
 
         # Initialise model processes
+        # Process fo rgenerating new patients
         self.env.process(self.new_admission_process())
+        # Process for maintaining day count
         self.env.process(self.day_count_process())
+        # Process for looking to relocate patients once per day
         self.env.process(self.relocate_displaced_process())
+        # Process to run audits
         self.env.process(self.day_audit_process())
 
         # Run model

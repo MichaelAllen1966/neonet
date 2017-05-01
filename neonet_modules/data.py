@@ -13,6 +13,7 @@ class Data:
         self.interhospital_distance_tuples = self.create_travel_distance_tuple_array(self.interhospital_distance_df)
         self.interhospital_time_tuples = self.create_travel_distance_tuple_array(self.interhospital_time_df)
         self.find_order_of_hospitals_by_closeness()
+        self.order_with_home_network_first()
         self.set_up_transition_probability_matrix()
         self.set_up_entry_matrix()
         self.set_up_fetus_number_matrix()
@@ -104,6 +105,26 @@ class Data:
         self.closest_hospital_distance = pd.DataFrame(closest_hospital_distance_list, index=LSOA)
         print('Closest hospital list size: ', self.closest_hospital_order.shape)
         print('Closest hospital distances/times size: ', self.closest_hospital_distance.shape)
+
+    def order_with_home_network_first(self):
+        lsoa_list=[]
+        closest_hospital_list=[]
+        print('\nCreating hospital search order list with home network first...')
+        network_lookup = self.hospital_info_df[['hospital_postcode','network']]
+        network_lookup.set_index(['hospital_postcode'],inplace=True)
+        for row_index,row in self.closest_hospital_order.iterrows():
+            home_network=network_lookup.loc[row[0]].item()
+            hospitals_in_same_network=network_lookup.loc[network_lookup['network']==home_network]
+            list_hospitals_in_same_network=list(hospitals_in_same_network.index)
+            hospitals_in_other_network=network_lookup.loc[network_lookup['network']!=home_network]
+            list_hospitals_in_other_network=list(hospitals_in_other_network.index)
+            ordered_hospitals_in_same_network=row.loc[row.isin(list_hospitals_in_same_network)]
+            ordered_hospitals_in_other_network = row.loc[row.isin(list_hospitals_in_other_network)]
+            ordered_hospitals_by_network = ordered_hospitals_in_same_network.append(
+                ordered_hospitals_in_other_network)
+            lsoa_list+=[row_index]
+            closest_hospital_list+=[list(ordered_hospitals_by_network.values)]
+        self.ordered_hospital_by_network=pd.DataFrame(closest_hospital_list,index=lsoa_list)
 
     def set_up_entry_matrix(self):
         self.entry_point.set_index('Category', inplace=True)
