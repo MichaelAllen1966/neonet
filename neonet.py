@@ -9,6 +9,9 @@ https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 For info contact michael.allen1966@gmail.com
 """
 
+# Todo need to fix general audit nurse workload. Really?
+# Todo add 'in home network' into audits
+
 import simpy
 import random
 import time
@@ -21,14 +24,10 @@ from neonet_modules.data import Data
 from neonet_modules.network import Network
 from neonet_modules.audit import Audit
 
-
-# Todo need to fix general audit nurse workload. Really?
-# Todo add in networks
-
 class Glob_vars:  # misc global data
     truncate_data = True
     warm_up = 0
-    sim_duration = 11
+    sim_duration = 51
     arrivals_per_day = 50
     interarrival_time = 1 / (arrivals_per_day)  # 1 /arrivals per day
     nurse_for_care_level = [1, 1, 0.5, 0.25, 0.125]  # Nurse requirements for surgery --> TC
@@ -131,9 +130,6 @@ class Model:
                     p.closest_appropriate_hospital = hospital
                     _closest_appropriate_hospital_identified = True
 
-                    # Set default patient object vaue to True for using closest appropriate hospital
-                    # todo this can be deleted if no error: _closest_appropriate_hospital_identified = True
-
                 # Calculate current nursing capacity in hospital being inspected (with allowed overloading)
                 _hospital_capacity = ((self.network.status['nursing_capacity'].loc[hospital] *
                                        Glob_vars.allowed_overload_fraction) -
@@ -160,6 +156,8 @@ class Model:
 
                     # Set hospital on patient object
                     p.current_hospital = hospital
+                    p.current_network = self.data.network_lookup.loc[p.current_hospital].item()
+                    p.in_home_network = 1 if p.current_network == p.home_network else 0
 
                     # Add patient object to network patients dictionary
                     self.network.patients[p.id] = p  # add patient to dictionary of patients

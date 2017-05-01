@@ -23,7 +23,8 @@ class Patient:
      'category_without_surgery',
      'closest_appropriate_hospital',
      'complete',
-     'current_hospital',
+     'current_hospital'
+     'current_network',
      'delivery_id',
      'distance_from_home',
      'entry',
@@ -56,6 +57,7 @@ class Patient:
         self.time_in = time_in
         self.spells = 0
         self.current_hospital = 'None'
+        self.current_network = 0
         self.home_network = 0
         self.in_closest_appropriate_hospital = False
         self.in_home_network = False

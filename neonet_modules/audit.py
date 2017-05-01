@@ -79,6 +79,7 @@ class Audit():
             data_list.append(p.fetuses)
             data_list.append(p.in_closest_appropriate_hospital)
             data_list.append(p.closest_appropriate_hospital)
+            data_list.append(p.in_home_network)
             patients.append(data_list)
 
         with open(my_csv, "a") as output:
@@ -147,7 +148,8 @@ class Audit():
                    'distance_from_home',
                    'fetuses',
                    'in_closest_suitable_unit',
-                   'closest_suitable_unit']
+                   'closest_suitable_unit',
+                   'in_home_network']
         filename = output_folder + '/patient_audit.csv'
         self.write_file(filename, headers)
 

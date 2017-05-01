@@ -139,15 +139,15 @@ class Data:
         lsoa_list = []
         closest_hospital_list = []
         print('\nCreating hospital search order list with home network first...')
-        network_lookup = self.hospital_info_df[['hospital_postcode', 'network']]
-        network_lookup.set_index(['hospital_postcode'], inplace=True)
+        self.network_lookup = self.hospital_info_df[['hospital_postcode', 'network']]
+        self.network_lookup.set_index(['hospital_postcode'], inplace=True)
         for row_index, row in self.closest_hospital_order.iterrows():
-            home_network = network_lookup.loc[row[0]].item()
-            hospitals_in_same_network = network_lookup.loc[
-                network_lookup['network'] == home_network]
+            home_network = self.network_lookup.loc[row[0]].item()
+            hospitals_in_same_network = self.network_lookup.loc[
+                self.network_lookup['network'] == home_network]
             list_hospitals_in_same_network = list(hospitals_in_same_network.index)
-            hospitals_in_other_network = network_lookup.loc[
-                network_lookup['network'] != home_network]
+            hospitals_in_other_network = self.network_lookup.loc[
+                self.network_lookup['network'] != home_network]
             list_hospitals_in_other_network = list(hospitals_in_other_network.index)
             ordered_hospitals_in_same_network = row.loc[row.isin(list_hospitals_in_same_network)]
             ordered_hospitals_in_other_network = row.loc[row.isin(list_hospitals_in_other_network)]
