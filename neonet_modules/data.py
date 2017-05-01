@@ -1,3 +1,16 @@
+"""National neonatal demand and capacity model
+*** Requires Python 3.6 or greater***
+
+Class to describe data loading
+
+Version 170501
+
+(c)2017 Michael Allen 
+This code is distributed under GNU GPL2
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+For info contact michael.allen1966@gmail.com
+"""
+
 import numpy as np
 import pandas as pd
 import time
@@ -10,8 +23,10 @@ class Data:
         self.load_data()
         self.filter_input_data_to_only_used_neonatal_units()
         self.travel_tuples = self.create_travel_distance_tuple_array(self.time_df)
-        self.interhospital_distance_tuples = self.create_travel_distance_tuple_array(self.interhospital_distance_df)
-        self.interhospital_time_tuples = self.create_travel_distance_tuple_array(self.interhospital_time_df)
+        self.interhospital_distance_tuples = self.create_travel_distance_tuple_array(
+            self.interhospital_distance_df)
+        self.interhospital_time_tuples = self.create_travel_distance_tuple_array(
+            self.interhospital_time_df)
         self.find_order_of_hospitals_by_closeness()
         self.order_with_home_network_first()
         self.set_up_transition_probability_matrix()
@@ -36,13 +51,15 @@ class Data:
                 distance_list.append(data)  # add distance data to list
 
         multi_index = pd.MultiIndex.from_tuples(index_tuple_list,
-                                                names=['from', 'to'])  # set up a tuple multi-level index
+                                                names=['from',
+                                                       'to'])  # set up a tuple multi-level index
         output = pd.Series(distance_list, index=multi_index, name='Distance')
         return output
 
     def filter_input_data_to_only_used_neonatal_units(self):
         print('\nTruncated to listed neonatal units...')
-        self.hospital_info_df = self.hospital_info_df.loc[self.hospital_info_df['neonatal_current'] == 1]
+        self.hospital_info_df = self.hospital_info_df.loc[
+            self.hospital_info_df['neonatal_current'] == 1]
         self.hospitals = list(self.hospital_info_df['hospital_postcode'])
         self.time_df = self.time_df[self.hospitals]
         print('Truncated distance matrix size: ', self.time_df.shape)
@@ -69,11 +86,13 @@ class Data:
 
         self.interhospital_distance_df = pd.read_csv('data/inter_hospital_d.csv')
         self.interhospital_distance_df.set_index('Hospital', inplace=True)
-        self.interhospital_distance_df = self.interhospital_distance_df.apply(pd.to_numeric, errors='coerce')
+        self.interhospital_distance_df = self.interhospital_distance_df.apply(pd.to_numeric,
+                                                                              errors='coerce')
 
         self.interhospital_time_df = pd.read_csv('data/inter_hospital_t.csv')
         self.interhospital_time_df.set_index('Hospital', inplace=True)
-        self.interhospital_time_df = self.interhospital_time_df.apply(pd.to_numeric, errors='coerce')
+        self.interhospital_time_df = self.interhospital_time_df.apply(pd.to_numeric,
+                                                                      errors='coerce')
 
         print('Loaded distance matrix size: ', self.time_df.shape)
         self.hospital_info_df = pd.read_csv('data/hospital_info.csv')
@@ -107,24 +126,36 @@ class Data:
         print('Closest hospital distances/times size: ', self.closest_hospital_distance.shape)
 
     def order_with_home_network_first(self):
-        lsoa_list=[]
-        closest_hospital_list=[]
+        """
+        This matrix is based on the closest_hospital_order_matrix.
+        It creates a dataframe of hospital and network (from full hospital details).
+        It identifies the closest hospital and looks up the network for that hospital.
+        It creates two lists: one of hospitals in the home network and one of other hospitals.
+        It then takes the home network hospitals from the closest_hospital_order_matrix,
+        maintaining the order in closest_hospital_order_matrix. It repeats the same for the non-home
+        network hospitals and then combines the two together.
+        It generates a new dataframe for ordered hospitals with home network hospitals first
+        """
+        lsoa_list = []
+        closest_hospital_list = []
         print('\nCreating hospital search order list with home network first...')
-        network_lookup = self.hospital_info_df[['hospital_postcode','network']]
-        network_lookup.set_index(['hospital_postcode'],inplace=True)
-        for row_index,row in self.closest_hospital_order.iterrows():
-            home_network=network_lookup.loc[row[0]].item()
-            hospitals_in_same_network=network_lookup.loc[network_lookup['network']==home_network]
-            list_hospitals_in_same_network=list(hospitals_in_same_network.index)
-            hospitals_in_other_network=network_lookup.loc[network_lookup['network']!=home_network]
-            list_hospitals_in_other_network=list(hospitals_in_other_network.index)
-            ordered_hospitals_in_same_network=row.loc[row.isin(list_hospitals_in_same_network)]
+        network_lookup = self.hospital_info_df[['hospital_postcode', 'network']]
+        network_lookup.set_index(['hospital_postcode'], inplace=True)
+        for row_index, row in self.closest_hospital_order.iterrows():
+            home_network = network_lookup.loc[row[0]].item()
+            hospitals_in_same_network = network_lookup.loc[
+                network_lookup['network'] == home_network]
+            list_hospitals_in_same_network = list(hospitals_in_same_network.index)
+            hospitals_in_other_network = network_lookup.loc[
+                network_lookup['network'] != home_network]
+            list_hospitals_in_other_network = list(hospitals_in_other_network.index)
+            ordered_hospitals_in_same_network = row.loc[row.isin(list_hospitals_in_same_network)]
             ordered_hospitals_in_other_network = row.loc[row.isin(list_hospitals_in_other_network)]
             ordered_hospitals_by_network = ordered_hospitals_in_same_network.append(
                 ordered_hospitals_in_other_network)
-            lsoa_list+=[row_index]
-            closest_hospital_list+=[list(ordered_hospitals_by_network.values)]
-        self.ordered_hospital_by_network=pd.DataFrame(closest_hospital_list,index=lsoa_list)
+            lsoa_list += [row_index]
+            closest_hospital_list += [list(ordered_hospitals_by_network.values)]
+        self.ordered_hospital_by_network = pd.DataFrame(closest_hospital_list, index=lsoa_list)
 
     def set_up_entry_matrix(self):
         self.entry_point.set_index('Category', inplace=True)

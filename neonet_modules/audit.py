@@ -1,9 +1,24 @@
+"""National neonatal demand and capacity model
+*** Requires Python 3.6 or greater***
+
+Class to describe audits
+
+Version 170501
+
+(c)2017 Michael Allen 
+This code is distributed under GNU GPL2
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+For info contact michael.allen1966@gmail.com
+"""
+
+
 import pandas as pd
 import os
 import csv
 import time
 
-#Todo add lengths of stay at each level and calaculate total length of stay from time in and time out
+
+# Todo add lengths of stay at each level and calaculate total length of stay from time in and time out
 
 class Audit():
     def __init__(self):
@@ -87,15 +102,14 @@ class Audit():
         patient.append(p.total_transfer_distance)
 
         # Add lengtos of stay for levels used
-        for level in range (5):
+        for level in range(5):
             if p.use_levels[level]:
                 patient.append(p.los[level])
             else:
                 patient.append("")
 
         patient.append(p.time_out)
-        patient.append(p.time_out-p.time_in)
-
+        patient.append(p.time_out - p.time_in)
 
         with open(my_csv, "a") as output:
             writer = csv.writer(output, lineterminator='\n')

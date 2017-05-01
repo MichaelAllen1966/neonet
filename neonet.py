@@ -1,6 +1,8 @@
 """National neonatal demand and capacity model
 *** Requires Python 3.6 or greater***
 
+Version 170501
+
 (c)2017 Michael Allen 
 This code is distributed under GNU GPL2
 https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
@@ -19,6 +21,7 @@ from neonet_modules.data import Data
 from neonet_modules.network import Network
 from neonet_modules.audit import Audit
 
+
 # Todo need to fix general audit nurse workload. Really?
 # Todo add in networks
 
@@ -34,10 +37,11 @@ class Glob_vars:  # misc global data
     year = 1
     output_folder = 'output/test'
     network_count_columns = ['current_surgery',
-                             'current_level_1', 
-                             'current_level_2', 
+                             'current_level_1',
+                             'current_level_2',
                              'current_level_3',
                              'current_level_4']
+
 
 class Model:
     def __init__(self):
@@ -51,8 +55,8 @@ class Model:
 
         # Daily audits
         while True:
-            self.audit.perform_daily_audit(Glob_vars.day, Glob_vars.year, self.network, 
-                Glob_vars.output_folder)
+            self.audit.perform_daily_audit(Glob_vars.day, Glob_vars.year, self.network,
+                                           Glob_vars.output_folder)
             # Trigger next audit in 1 day
             yield self.env.timeout(1)
 
@@ -76,7 +80,7 @@ class Model:
 
         # If level of care = IC but LoS <2 days then allow a HDU unit to care for infant
         if _required_care_level == 1:
-            if p.los[1]<2:
+            if p.los[1] < 2:
                 p.required_unit_type = 2
 
         # If level of care = HD but LoS <2 days then allow a SCU unit to care for infant
@@ -85,13 +89,14 @@ class Model:
                 p.required_unit_type = 3
 
         # Filter hospital list to appropriate level
-        _header_list = ['neonatal_surg', 
-                        'neonatal_level_1', 
-                        'neonatal_level_2', 
-                        'neonatal_level_3', 
+        _header_list = ['neonatal_surg',
+                        'neonatal_level_1',
+                        'neonatal_level_2',
+                        'neonatal_level_3',
                         'neonatal_level_4']
-        _check_column_name = _header_list[ p.required_unit_type]
-        _filtered_hospitals = (self.data.hospital_info_df.loc[self.data.hospital_info_df[_check_column_name] == 1])
+        _check_column_name = _header_list[p.required_unit_type]
+        _filtered_hospitals = (
+        self.data.hospital_info_df.loc[self.data.hospital_info_df[_check_column_name] == 1])
         _hospital_search_list = list(_filtered_hospitals['hospital_postcode'])
 
         # Generate list of all hospitals (closest first) depedning on LSOA
@@ -105,10 +110,10 @@ class Model:
         # Record 'birth hospital' as closest hospital with any level of neonatal unit
         if p.birth_hospital == 'None':
             p.birth_hospital = _ordered_list_for_lsoa[0]
-            _hospital_details=self.data.hospital_info_df[self.data.hospital_info_df['hospital_postcode'] == _ordered_list_for_lsoa[0]]
-            p.home_network=_hospital_details['network'].item() # network extracted as dictionary
-                
-            
+            _hospital_details = self.data.hospital_info_df[
+                self.data.hospital_info_df['hospital_postcode'] == _ordered_list_for_lsoa[0]]
+            p.home_network = _hospital_details['network'].item()  # network extracted as dictionary
+
         # If this is first spell record 'previous hospital' as birth hospital
         # This is used for transfer if 1st level of care is greater than available in bith hospital
         if p.spells == 1:
@@ -140,7 +145,8 @@ class Model:
                     _bed_found = 1
 
                     # Adjust hospital nursing resources used
-                    _new_value = self.network.status.loc[hospital]['current_workload'] + _required_nurse_resources
+                    _new_value = self.network.status.loc[hospital][
+                                     'current_workload'] + _required_nurse_resources
                     self.network.status.set_value(hospital, 'current_workload', _new_value)
 
                     # Adjust hospital care level count
@@ -219,7 +225,8 @@ class Model:
             self.network.admissions += 1
             self.network.bed_count += 1
             self.network.deliveries += 1
-            p = Patient(data=self.data, id=self.network.admissions, delivery=self.network.deliveries,
+            p = Patient(data=self.data, id=self.network.admissions,
+                        delivery=self.network.deliveries,
                         time_in=self.env.now)
             p.set_care_requirements(self.data)
             self.network.patients[p.id] = p
@@ -261,7 +268,8 @@ class Model:
                     _transfer_to_hospital = _closest_appropriate_hospital
 
                     _displaced_patient._current_hopsital = _closest_appropriate_hospital
-                    self.transfer_patient(_current_hopsital, _transfer_to_hospital, _displaced_patient)
+                    self.transfer_patient(_current_hopsital, _transfer_to_hospital,
+                                          _displaced_patient)
 
                     _displaced_patient.previous_hospital = _current_hopsital
 
@@ -276,7 +284,8 @@ class Model:
                     self.network.status.set_value(_old_hospital, 'current_workload', _new_value)
 
                     # Remove from old hospital care level count
-                    _network_col = Glob_vars.network_count_columns[_displaced_patient.required_care_level_current]
+                    _network_col = Glob_vars.network_count_columns[
+                        _displaced_patient.required_care_level_current]
                     _new_value = self.network.status.loc[_old_hospital][_network_col] - 1
                     self.network.status.set_value(_old_hospital, _network_col, _new_value)
 
@@ -290,7 +299,8 @@ class Model:
                     self.network.status.set_value(_new_hospital, 'current_workload', _new_value)
 
                     # Add to new hospital care level count
-                    _network_col = Glob_vars.network_count_columns[_displaced_patient.required_care_level_current]
+                    _network_col = Glob_vars.network_count_columns[
+                        _displaced_patient.required_care_level_current]
                     _new_value = self.network.status.loc[_new_hospital][_network_col] + 1
                     self.network.status.set_value(_new_hospital, _network_col, _new_value)
 
@@ -332,10 +342,12 @@ class Model:
                     # Adjust hospital tracking at end of spell
 
                     # Remove nurse workload
-                    _required_nurse_resources = Glob_vars.nurse_for_care_level[p.required_care_level_current]
+                    _required_nurse_resources = Glob_vars.nurse_for_care_level[
+                        p.required_care_level_current]
                     _new_value = self.network.status['current_workload'].loc[
                                      p.current_hospital] - _required_nurse_resources
-                    self.network.status.set_value(p.current_hospital, 'current_workload', _new_value)
+                    self.network.status.set_value(p.current_hospital, 'current_workload',
+                                                  _new_value)
 
                     # Remove from care level tracking
                     _network_col = Glob_vars.network_count_columns[p.required_care_level_current]

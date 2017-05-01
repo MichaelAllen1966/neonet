@@ -1,8 +1,21 @@
+"""National neonatal demand and capacity model
+*** Requires Python 3.6 or greater***
+
+Class to describe patient attributes
+
+Version 170501
+
+(c)2017 Michael Allen 
+This code is distributed under GNU GPL2
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+For info contact michael.allen1966@gmail.com
+"""
+
 import numpy as np
 import random
 
-class Patient:
 
+class Patient:
     """
      Attributes;
      'birth_hospital',
@@ -58,7 +71,7 @@ class Patient:
         self.distance_from_home = 0
         self.transfers = 0
         self.total_transfer_distance = 0
-        
+
         # Set infant category
         weights = data.deliveries['percent_all_deliveries']
         selection = np.arange(len(weights))
@@ -102,10 +115,10 @@ class Patient:
                 self.use_levels[next_assigned_level] = True
             last_assigned_level = next_assigned_level
 
-        # Add lengths of stay
+            # Add lengths of stay
             # loop through care levels
             self.los = []
-            for care_level in range (5):
+            for care_level in range(5):
                 _los_mu = self.los_ln_mu[0][care_level]
                 _los_stdev = self.los_ln_stdev[0][care_level]
                 _los = np.random.lognormal(_los_mu, _los_stdev)
