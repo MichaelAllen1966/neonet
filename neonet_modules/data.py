@@ -39,6 +39,7 @@ class Data:
         end = time.time()
         print('\nData loaded and munged in %d seconds' % (end - start))
 
+
     def create_travel_distance_tuple_array(self, matrix):
         print('Creating travel time table...')
         index_tuple_list = []

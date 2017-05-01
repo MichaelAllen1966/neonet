@@ -27,7 +27,7 @@ from neonet_modules.audit import Audit
 class Glob_vars:  # misc global data
     truncate_data = True
     warm_up = 0
-    sim_duration = 51
+    sim_duration = 1000
     arrivals_per_day = 50
     interarrival_time = 1 / (arrivals_per_day)  # 1 /arrivals per day
     nurse_for_care_level = [1, 1, 0.5, 0.25, 0.125]  # Nurse requirements for surgery --> TC
@@ -241,6 +241,7 @@ class Model:
                     self.network.admissions += 1
                     self.network.bed_count += 1
                     p2.id = self.network.admissions
+                    self.network.patients[p2.id] = p2
                     self.env.process(self.spell_gen_process(p2))
             yield self.env.timeout(next_admission)
 
