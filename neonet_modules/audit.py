@@ -90,6 +90,7 @@ class Audit():
         my_csv = output_folder + '/patient_log.csv'
         patient = []
         patient.append(p.time_in)
+        patient.append(p.year)
         patient.append(p.birth_hospital)
         patient.append(p.category[0])
         patient.append(p.category_without_surgery[0])
@@ -156,6 +157,7 @@ class Audit():
         # Set up patient log
 
         headers = ['time_in',
+                   'year',
                    'birth_hospital',
                    'category',
                    'category_without_surgery',

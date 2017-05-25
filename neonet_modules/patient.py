@@ -46,15 +46,17 @@ class Patient:
      'transfers',
      'time_in',
      'time_out,
+     'year',
      'use_levels
 
     """
 
-    def __init__(self, data, id, delivery, time_in):
+    def __init__(self, data, id, delivery, time_in, year):
 
         self.id = id
         self.delivery_id = delivery
         self.time_in = time_in
+        self.year = year
         self.spells = 0
         self.current_hospital = 'None'
         self.current_network = 0

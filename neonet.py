@@ -9,8 +9,8 @@ https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 For info contact michael.allen1966@gmail.com
 """
 
-# Todo need to fix general audit nurse workload. Really?
-# Todo add 'in home network' into audits
+# todo add in some __str__ to classes to return summary info
+# todo fix patient log number of transfers not being recorded (done - to be checked)
 
 import simpy
 import random
@@ -18,23 +18,25 @@ import time
 import numpy as np
 import copy
 
-# Import classes 
+# Import classes from modules
 from neonet_modules.patient import Patient
 from neonet_modules.data import Data
 from neonet_modules.network import Network
 from neonet_modules.audit import Audit
+from neonet_modules.summary import Summarise
 
 class Glob_vars:  # misc global data
-    truncate_data = True
-    warm_up = 0
-    sim_duration = 1000
-    arrivals_per_day = 50
+    truncate_data = False  # use True for code testing only: results will not be correct
+    warm_up = 366
+    sim_duration = 365  # sim duration after warm-up
+    sim_duration += warm_up
+    arrivals_per_day = 165
     interarrival_time = 1 / (arrivals_per_day)  # 1 /arrivals per day
     nurse_for_care_level = [1, 1, 0.5, 0.25, 0.125]  # Nurse requirements for surgery --> TC
     allowed_overload_fraction = 1.5  # allowed fraction of BAPM guidelines allowed
     day = 0
     year = 1
-    output_folder = 'output/test'
+    output_folder = 'output/test3'
     network_count_columns = ['current_surgery',
                              'current_level_1',
                              'current_level_2',
@@ -192,7 +194,8 @@ class Model:
         self.data = Data(truncate=Glob_vars.truncate_data)
 
         # Set up network status dataframe
-        self.network = Network(self.data.hospitals)
+        self.network = Network(self.data.hospitals, list(self.data.hospital_info_df[
+                                                             'nurse_capacity']))
 
         # Set up audit
         self.audit = Audit()
@@ -216,6 +219,7 @@ class Model:
 
         # Model end
         self.end_time = time.time()
+        Summarise(Glob_vars.output_folder)
         print('\nEnd. Model run in %d seconds' % (self.end_time - self.start_time))
 
     def new_admission_process(self):
@@ -225,7 +229,8 @@ class Model:
             self.network.deliveries += 1
             p = Patient(data=self.data, id=self.network.admissions,
                         delivery=self.network.deliveries,
-                        time_in=self.env.now)
+                        time_in=self.env.now,
+                        year=Glob_vars.year)
             p.set_care_requirements(self.data)
             self.network.patients[p.id] = p
             # self.spell = self.spell_gen_process(p)
@@ -386,6 +391,7 @@ class Model:
         self.audit.total_transfer_distance += _transfer_distance
         self.audit.total_transfer_time += _transfer_time
         p.total_transfer_distance += _transfer_distance
+        p.transfers += 1
 
 
 def main():

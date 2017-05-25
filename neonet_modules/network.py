@@ -17,11 +17,11 @@ import pandas as pd
 class Network:
     """Network class holds capacity and utilisation of all hospitals"""
 
-    def __init__(self, hospitals):
+    def __init__(self, hospitals, nurse_capacity):
         self.status = pd.DataFrame()
         self.status['hospital'] = hospitals
         self.status.set_index('hospital', inplace=True)
-        self.status['nursing_capacity'] = 2
+        self.status['nursing_capacity'] = nurse_capacity
         self.status['current_workload'] = 0.0
         self.status['current_surgery'] = 0
         self.status['current_level_1'] = 0
