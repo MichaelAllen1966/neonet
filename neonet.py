@@ -28,7 +28,7 @@ from neonet_modules.summary import Summarise
 class Glob_vars:  # misc global data
     truncate_data = False  # use True for code testing only: results will not be correct
     warm_up = 366
-    sim_duration = 365  # sim duration after warm-up
+    sim_duration = 365 * 5  # sim duration after warm-up
     sim_duration += warm_up
     arrivals_per_day = 165
     interarrival_time = 1 / (arrivals_per_day)  # 1 /arrivals per day
@@ -36,7 +36,7 @@ class Glob_vars:  # misc global data
     allowed_overload_fraction = 1.5  # allowed fraction of BAPM guidelines allowed
     day = 0
     year = 1
-    output_folder = 'output/test3'
+    output_folder = 'output/test4'
     network_count_columns = ['current_surgery',
                              'current_level_1',
                              'current_level_2',
