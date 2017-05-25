@@ -23,9 +23,9 @@ from neonet_modules.patient import Patient
 from neonet_modules.data import Data
 from neonet_modules.network import Network
 from neonet_modules.audit import Audit
-from neonet_modules.summary import Summarise
 
 class Glob_vars:  # misc global data
+    output_folder = 'output/test'
     truncate_data = False  # use True for code testing only: results will not be correct
     warm_up = 366
     sim_duration = 365 * 5  # sim duration after warm-up
@@ -36,7 +36,6 @@ class Glob_vars:  # misc global data
     allowed_overload_fraction = 1.5  # allowed fraction of BAPM guidelines allowed
     day = 0
     year = 1
-    output_folder = 'output/test4'
     network_count_columns = ['current_surgery',
                              'current_level_1',
                              'current_level_2',
