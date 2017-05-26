@@ -73,17 +73,25 @@ class Summarise:
         # Summarise hospital audit
         print('Summarising hospital audit')
         hospital_day_audit = pd.read_csv(output_folder + '/hospital_day_audit.csv')
-        df_hospital = pd.DataFrame()
-        hospital_by_year = hospital_day_audit.groupby('year').mean()
-        df_hospital['mean'] = hospital_day_audit.mean()
-        df_hospital['std'] = hospital_day_audit.std()
-        df_hospital['count'] = hospital_day_audit.count()
-        df_hospital['10%'] = hospital_day_audit.quantile(0.1)
-        df_hospital['25%'] = hospital_day_audit.quantile(0.25)
-        df_hospital['50%'] = hospital_day_audit.quantile(0.5)
-        df_hospital['75%'] = hospital_day_audit.quantile(0.75)
-        df_hospital['90%'] = hospital_day_audit.quantile(0.9)
-        df_hospital.to_csv(output_folder + '/summary_hospital.csv')
+        workload_percentile_by_year = pd.DataFrame()
+        # Sum workloads at different percentiles (e.g. 50 is calculate median workload at each
+        # hospital and sum)
+        for i in [50, 75, 80, 85, 90, 95, 99]:
+            pivot = hospital_day_audit.pivot_table(index='hospital', columns='year',
+                                                   values='current_workload',
+                                                   aggfunc=lambda x: np.percentile(x, i))
+            workload_percentile_by_year[i] = pivot.sum()
+
+        total_nurse_workload = pd.DataFrame()
+        total_nurse_workload['mean'] = workload_percentile_by_year.mean()
+        total_nurse_workload['stdv'] = workload_percentile_by_year.std()
+        total_nurse_workload['0.1'] = workload_percentile_by_year.quantile(0.1)
+        total_nurse_workload['0.25'] = workload_percentile_by_year.quantile(0.25)
+        total_nurse_workload['0.50'] = workload_percentile_by_year.quantile(0.50)
+        total_nurse_workload['0.75'] = workload_percentile_by_year.quantile(0.75)
+        total_nurse_workload['0.90'] = workload_percentile_by_year.quantile(0.90)
+        total_nurse_workload.to_csv(output_folder + '/summary_nurse_workload.csv')
         del hospital_day_audit
-        del df_hospital
-        del hospital_by_year
+        del workload_percentile_by_year
+        del pivot
+        del total_nurse_workload

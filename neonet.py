@@ -23,19 +23,20 @@ from neonet_modules.patient import Patient
 from neonet_modules.data import Data
 from neonet_modules.network import Network
 from neonet_modules.audit import Audit
+from neonet_modules.summarise import Summarise
 
 class Glob_vars:  # misc global data
-    output_folder = 'output/test'
     truncate_data = False  # use True for code testing only: results will not be correct
     warm_up = 366
-    sim_duration = 365 * 5  # sim duration after warm-up
+    sim_duration = 365 * 10  # sim duration after warm-up
     sim_duration += warm_up
-    arrivals_per_day = 165
+    arrivals_per_day = 228
     interarrival_time = 1 / (arrivals_per_day)  # 1 /arrivals per day
     nurse_for_care_level = [1, 1, 0.5, 0.25, 0.125]  # Nurse requirements for surgery --> TC
     allowed_overload_fraction = 1.5  # allowed fraction of BAPM guidelines allowed
     day = 0
     year = 1
+    output_folder = 'output/test4'
     network_count_columns = ['current_surgery',
                              'current_level_1',
                              'current_level_2',
