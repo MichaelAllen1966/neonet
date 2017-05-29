@@ -26,7 +26,7 @@ from neonet_modules.audit import Audit
 from neonet_modules.summarise import Summarise
 
 class Glob_vars:  # misc global data
-    truncate_data = False  # use True for code testing only: results will not be correct
+    truncate_data = True  # use True for code testing only: results will not be correct
     warm_up = 366
     sim_duration = 365 * 10  # sim duration after warm-up
     sim_duration += warm_up
@@ -36,7 +36,7 @@ class Glob_vars:  # misc global data
     allowed_overload_fraction = 1.5  # allowed fraction of BAPM guidelines allowed
     day = 0
     year = 1
-    output_folder = 'output/test4'
+    output_folder = 'output/test2'
     network_count_columns = ['current_surgery',
                              'current_level_1',
                              'current_level_2',
@@ -219,7 +219,7 @@ class Model:
 
         # Model end
         self.end_time = time.time()
-        Summarise(Glob_vars.output_folder)
+        Summarise(self.audit, Glob_vars.output_folder)
         print('\nEnd. Model run in %d seconds' % (self.end_time - self.start_time))
 
     def new_admission_process(self):

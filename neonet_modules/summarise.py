@@ -12,10 +12,11 @@ For info contact michael.allen1966@gmail.com
 """
 
 import pandas as pd
+import numpy as np
 
 
 class Summarise:
-    def __init__(self, output_folder):
+    def __init__(self, audit, output_folder):
         # Summarise general audit
         general_audit = pd.read_csv(output_folder + '/general_day_audit.csv')
         print('Summarising general audit')
@@ -33,6 +34,16 @@ class Summarise:
         del df_general
         del general_audit
         del general_by_year
+
+        # Save transfers and no bed
+        df_transfers = pd.Series()
+        df_transfers['transfers'] = audit.transfers
+        df_transfers['transfer_distance'] = audit.total_transfer_distance
+        df_transfers['transfer_time'] = audit.total_transfer_time
+        df_transfers['episodes_no_bed'] = audit.episodes_with_no_bed_found
+        df_transfers['los_no_bed'] = audit.total_episodes_length_with_no_bed_found
+        df_transfers.to_csv(output_folder + '/transfers_and_no_bed.csv')
+        del df_transfers
 
         # Summarise patient log
         print('Summarising patient log')
