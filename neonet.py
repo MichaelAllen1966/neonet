@@ -36,7 +36,7 @@ class Glob_vars:  # misc global data
     allowed_overload_fraction = 1.5  # allowed fraction of BAPM guidelines allowed
     day = 0
     year = 1
-    output_folder = 'output/test2'
+    output_folder = 'output/debug_validation'
     network_count_columns = ['current_surgery',
                              'current_level_1',
                              'current_level_2',
