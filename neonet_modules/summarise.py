@@ -106,3 +106,14 @@ class Summarise:
         del workload_percentile_by_year
         del pivot
         del total_nurse_workload
+
+        # Summarise hospital by day
+        hospital_day_audit = pd.read_csv('hospital_day_audit.csv')
+
+        for item in ['current_workload', 'current_surgery', 'current_level_1', 'current_level_2',
+                     'current_level_3', 'current_level_4', 'all_infant']:
+            pivot = hospital_day_audit.pivot_table(index='day', columns='hospital', values=item)
+            file_name = '/hospital_pivot_by_day_' + item + '.csv'
+            pivot.to_csv(output_folder + file_name)
+
+            # pivot=hospital_day_audit.pivot_table(index='hospital',columns='year',values='current_workload',aggfunc=lambda x: np.percentile(x, 0.5))
