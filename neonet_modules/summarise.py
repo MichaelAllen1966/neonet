@@ -116,4 +116,29 @@ class Summarise:
             file_name = '/hospital_pivot_by_day_' + item + '.csv'
             pivot.to_csv(output_folder + file_name)
 
-            # pivot=hospital_day_audit.pivot_table(index='hospital',columns='year',values='current_workload',aggfunc=lambda x: np.percentile(x, 0.5))
+        # Stats for each hospital
+        file_list = ['hospital_pivot_by_day_current_surgery.csv',
+                     'hospital_pivot_by_day_current_level_1.csv',
+                     'hospital_pivot_by_day_current_level_2.csv',
+                     'hospital_pivot_by_day_current_level_3.csv',
+                     'hospital_pivot_by_day_current_level_4.csv',
+                     'hospital_pivot_by_day_all_infant.csv',
+                     'hospital_pivot_by_day_current_workload.csv']
+        column_names = ['surgery', 'level_1', 'level_2', 'level_3', 'level_4', 'infants',
+                        'workload']
+
+        summary_df = pd.DataFrame()
+
+        for i in range(7):
+            file_name = file_list[i]
+            data = pd.read_csv(file_name)
+            del data['day']
+            summary_df[column_names[i] + '_mean'] = data.mean()
+            summary_df[column_names[i] + '_stdev'] = data.std()
+            summary_df[column_names[i] + '_10_percentile'] = data.quantile(0.1)
+            summary_df[column_names[i] + '_25_percentile'] = data.quantile(0.25)
+            summary_df[column_names[i] + '_50_percentile'] = data.quantile(0.5)
+            summary_df[column_names[i] + '_75_percentile'] = data.quantile(0.75)
+            summary_df[column_names[i] + '_90_percentile'] = data.quantile(0.90)
+
+        summary_df.to_csv(output_folder + '/summary_by_hospital.csv')
