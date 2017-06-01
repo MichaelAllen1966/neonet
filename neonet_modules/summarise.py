@@ -17,6 +17,7 @@ import numpy as np
 
 class Summarise:
     def __init__(self, audit, output_folder):
+
         # Summarise general audit
         general_audit = pd.read_csv(output_folder + '/general_day_audit.csv')
         print('Summarising general audit')
@@ -83,14 +84,15 @@ class Summarise:
 
         # Summarise hospital audit
         print('Summarising hospital audit')
-        hospital_day_audit = pd.read_csv(output_folder + '/hospital_day_audit.csv')
+        filename = output_folder + '/hospital_day_audit.csv'
+        hosp_audit = pd.read_csv(output_folder + '/hospital_day_audit.csv')
         workload_percentile_by_year = pd.DataFrame()
         # Sum workloads at different percentiles (e.g. 50 is calculate median workload at each
         # hospital and sum)
         for i in [50, 75, 80, 85, 90, 95, 99]:
-            pivot = hospital_day_audit.pivot_table(index='hospital', columns='year',
-                                                   values='current_workload',
-                                                   aggfunc=lambda x: np.percentile(x, i))
+            pivot = hosp_audit.pivot_table(index='hospital', columns='year',
+                                           values='current_workload',
+                                           aggfunc=lambda x: np.percentile(x, i))
             workload_percentile_by_year[i] = pivot.sum()
 
         total_nurse_workload = pd.DataFrame()
@@ -102,13 +104,13 @@ class Summarise:
         total_nurse_workload['0.75'] = workload_percentile_by_year.quantile(0.75)
         total_nurse_workload['0.90'] = workload_percentile_by_year.quantile(0.90)
         total_nurse_workload.to_csv(output_folder + '/summary_nurse_workload.csv')
-        del hospital_day_audit
+        del hosp_audit
         del workload_percentile_by_year
         del pivot
         del total_nurse_workload
 
         # Summarise hospital by day
-        hospital_day_audit = pd.read_csv('hospital_day_audit.csv')
+        hospital_day_audit = pd.read_csv(output_folder + '/hospital_day_audit.csv')
 
         for item in ['current_workload', 'current_surgery', 'current_level_1', 'current_level_2',
                      'current_level_3', 'current_level_4', 'all_infant']:
@@ -130,7 +132,7 @@ class Summarise:
         summary_df = pd.DataFrame()
 
         for i in range(7):
-            file_name = file_list[i]
+            file_name = output_folder + '/' + file_list[i]
             data = pd.read_csv(file_name)
             del data['day']
             summary_df[column_names[i] + '_mean'] = data.mean()
