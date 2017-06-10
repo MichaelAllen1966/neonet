@@ -1,9 +1,9 @@
 """National neonatal demand and capacity model
 *** Requires Python 3.6 or greater***
 
-Version 170501
+Version 170601
 
-(c)2017 Michael Allen 
+(c)2017 Michael Allen
 This code is distributed under GNU GPL2
 https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 For info contact michael.allen1966@gmail.com
@@ -75,7 +75,7 @@ class Model:
         _required_nurse_resources = Glob_vars.nurse_for_care_level[_required_care_level]
 
         # set required unit type
-        # default to care level (0=surg --> 4 = TC), 
+        # default to care level (0=surg --> 4 = TC),
         # but amend for short Los at a particular care level
         p.required_unit_type = _required_care_level
 
