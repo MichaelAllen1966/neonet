@@ -5,7 +5,7 @@ Class to describe data loading
 
 Version 170528
 
-(c)2017 Michael Allen 
+(c)2017 Michael Allen
 This code is distributed under GNU GPL2
 https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 For info contact michael.allen1966@gmail.com
@@ -78,9 +78,18 @@ class Summarise:
         df_patient_audit['75%'] = patient_audit_by_year.quantile(0.75)
         df_patient_audit['90%'] = patient_audit_by_year.quantile(0.9)
         df_patient_audit.to_csv(output_folder + '/summary_patient_audit.csv')
+
+        # then count patients more than 30, 45 and 60 min from home
+        results=pd.Series()
+        results['greater_than_30']=(df_patient_audit['distance_from_home']>30).mean()
+        results['greater_than_45']=(df_patient_audit['distance_from_home']>45).mean()
+        results['greater_than_60']=(df_patient_audit['distance_from_home']>60).mean()
+        results.to_csv(output_folder + '/travel_greater_than_30_45_60.csv')
+
         del patient_audit
         del df_patient_audit
         del patient_audit_by_year
+        del results
 
         # Summarise hospital audit
         print('Summarising hospital audit')

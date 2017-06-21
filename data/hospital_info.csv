@@ -72,7 +72,7 @@ IP4 5PD,Ipswich Hospital,Ipswich,2,1,LNU,0,0,1,1,1,999999
 KT16 0PZ,St Peter's Hospital; Guildford Road; Chertsey,London - W,9,1,NICU,0,1,1,1,1,999999
 KT18 7EG,Epsom Hospital; Dorking; Epsom,London - SW,10,1,SCU,0,0,0,1,1,999999
 KT2 7QB,Kingston Hospital,Kingston upon Thames,10,1,LNU,0,0,1,1,1,999999
-L14 5AB,Alder Hey Hospital,Liverpool,10,1,SURGERY ONLY,1,0,0,0,0,999999
+L14 5AB,Alder Hey Hospital,Liverpool,5,1,SURGERY ONLY,1,0,0,0,0,999999
 L35 5DR,Whiston Hospital; Warrington Road; Rainhill; Prescot,Prescot,5,1,LNU,0,0,1,1,1,999999
 L39 2JW,Ormskirk District General Hospital;Ormskirk,Ormskirk,5,1,LNU,0,0,1,1,1,999999
 L7 8XP,Royal Liverpool University Hospital,Liverpool,5,0,NA,0,0,0,0,0,999999
@@ -173,7 +173,7 @@ UB8 3NN,Hillingdon Hospital;Uxbridge,Uxbridge,4,1,LNU,0,0,1,1,1,999999
 W12 0HS,Queen Charlotte's Hospital;London,London - W,4,1,NICU,0,1,1,1,1,999999
 W2 1NY,St Mary's Hospital London;London,London - W,4,1,LNU,0,0,1,1,1,999999
 WA5 1QG,Warrington Hospital; Lovely Lane; Warrington,Warrington,5,1,LNU,0,0,1,1,1,999999
-WC1N 3JH,Great Ormond Street Hospital,London - N,5,1,SURGERY ONLY,1,0,0,0,0,999999
+WC1N 3JH,Great Ormond Street Hospital,London - N,3,1,SURGERY ONLY,1,0,0,0,0,999999
 WD18 0HB,Watford General Hospital; vicarage road; Watford,Watford,2,1,LNU,0,0,1,1,1,999999
 WF1 4DG,Pinderfields Hospital; Wakefield,Wakefield,2,0,NA,0,0,0,0,0,999999
 WF13 4HS,Dewsbury & District Hospital;Dewsbury,Dewsbury,16,1,SCU,0,0,0,1,1,999999
