@@ -81,9 +81,9 @@ class Summarise:
 
         # then count patients more than 30, 45 and 60 min from home
         results=pd.Series()
-        results['greater_than_30']=(df_patient_audit['distance_from_home']>30).mean()
-        results['greater_than_45']=(df_patient_audit['distance_from_home']>45).mean()
-        results['greater_than_60']=(df_patient_audit['distance_from_home']>60).mean()
+        results['greater_than_30']=(patient_audit['distance_from_home']>30).mean()
+        results['greater_than_45']=(patient_audit['distance_from_home']>45).mean()
+        results['greater_than_60']=(patient_audit['distance_from_home']>60).mean()
         results.to_csv(output_folder + '/travel_greater_than_30_45_60.csv')
 
         del patient_audit
