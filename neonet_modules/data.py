@@ -6,8 +6,8 @@ Class to describe data loading
 Version 170501
 
 (c)2017 Michael Allen 
-This code is distributed under GNU GPL2
-https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+This code is distributed under Apache Licence 2.0
+https://www.apache.org/licenses/LICENSE-2.0
 For info contact michael.allen1966@gmail.com
 """
 
